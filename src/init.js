@@ -1,5 +1,5 @@
 const config = {
-    title: "HackCovid19",
+    title: "",
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -21,31 +21,40 @@ const config = {
         }
     },
 
-
 }
-var gameOver = false;
-var Puntos = 0;
-var game = new Phaser.Game(config);
 
+var Puntos = 0;
+var PuntosTexto;
+var gameOver = false
+
+
+var game = new Phaser.Game(config);
 
 function preload() {
     this.load.setPath('./Assets/');
     this.load.image([
-        'Lucky',
-        'Water',
-        'Fond',
+        'Coin',
+        'Esfera',
+        'Fondo',
         'Plataforma',
     ]);
-    this.load.spritesheet('Kaze', 'Kaze.png', { frameWidth: 32.5, frameHeight: 48 });
-   
+    this.load.spritesheet('Kaze', 'kaze.png', { frameWidth: 32.5, frameHeight: 48 });
+
 };
 function create() {
-    this.add.image(400, 450, 'Fond').setScale(1, 2.5);
-    plataforma = this.physics.add.staticGroup();
-    plataforma.create(400, 590, 'Plataforma').setScale(2.1, 1).refreshBody();
-    Kaze = this.physics.add.sprite(230, 100, 'Kaze');
+    this.add.image(400, 300, 'Fondo').setScale(1, 1.15);
+    Plataforma = this.physics.add.staticGroup();
+    Plataforma.create(400, 590, 'Plataforma').setScale(2.1, 1).refreshBody();
+    Plataforma.create(400, 0, 'Plataforma').setScale(2.1, 1).refreshBody();
+    Plataforma.create(700, 410, 'Plataforma').setScale(0.3, 1).refreshBody();
+    Plataforma.create(400, 300, 'Plataforma').setScale(0.2, 1).refreshBody();
+    Plataforma.create(800, 150, 'Plataforma');
+    Plataforma.create(-50, 300, 'Plataforma');
+    Plataforma.create(0, 450, 'Plataforma');
+    Kaze = this.physics.add.sprite(220, 200, 'Kaze');
     Kaze.setCollideWorldBounds(true);
     Kaze.setBounce(0.2);
+
     this.anims.create({
         key: 'Izquierda',
         frames: this.anims.generateFrameNumbers('Kaze', { start: 0, end: 3 }),
@@ -66,65 +75,40 @@ function create() {
         frameRate: 20
     });
 
-    this.physics.add.collider(Kaze, plataforma);
-    plataforma.getChildren()[0].setOffset(0, 10);
+    this.physics.add.collider(Kaze, Plataforma);
+    Plataforma.getChildren()[0].setOffset(0, 10);
     cursors = this.input.keyboard.createCursorKeys();
 
-    plantita = this.physics.add.group({
-        key: 'Lucky',
+    coins = this.physics.add.group({
+        key: 'Coin',
         repeat: 5,
         setXY: { x: 12, y: 50, stepX: 140 }
     });
-    plantita.children.iterate(function (child) {
+    coins.children.iterate(function (child) {
         child.setBounce(Phaser.Math.FloatBetween(0.4, 0.8));
     });
 
-    this.physics.add.collider(plataforma, plantita);
+    this.physics.add.collider(Plataforma, coins);
 
-    this.physics.add.overlap(Kaze, plantita, esconder, null, this);
+    this.physics.add.overlap(Kaze, coins, esconder, null, this);
 
     PuntosTexto = this.add.text(300, 560, 'Puntos: 0', { fontSize: '40px', fill: 'red' });
     enemigos = this.physics.add.group();
-    this.physics.add.collider(enemigos, plataforma);
+    this.physics.add.collider(enemigos, Plataforma);
     this.physics.add.collider(Kaze, enemigos, choque, null, this);
 
-    function esconder(Kaze, plantita) {
-
-        plantita.disableBody(true, true);
-
-        Puntos += 10;
-        PuntosTexto.setText('Puntos:' + Puntos);
-        if (plantita.countActive(true) === 0) {
-
-            plantita.children.iterate(function (child) {
-
-                child.enableBody(true, child.x, 50, true, true)
-
-            });
-
-            var x = (Kaze.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-
-            Water = enemigos.create(x, 16, 'Water');
-            Water.setBounce(1);
-            Water.setCollideWorldBounds(true);
-            Water.setVelocity(Phaser.Math.Between(-100, 100), 5);
-
-        }
-
-
-    }
-
-    function choque(Kaze, Water) {
-        this.physics.pause();
-        Kaze.anims.play('Quieto');
-        gameOver = true;
-    }
 
 
 
 
 };
-function update() {
+
+
+
+
+
+
+function update(time, delta) {
     if (gameOver) {
         return;
     }
@@ -149,4 +133,38 @@ function update() {
 
 
 
+};
+
+function esconder(Kaze, Coin) {
+
+    Coin.disableBody(true, true);
+
+    Puntos += 10;
+    PuntosTexto.setText('Puntos:' + Puntos);
+    if (coins.countActive(true) === 0) {
+
+        coins.children.iterate(function (child) {
+
+            child.enableBody(true, child.x, 50, true, true)
+
+        });
+
+        var x = (Kaze.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+
+        Esferas = enemigos.create(x, 16, 'Esfera');
+        Esferas.setBounce(1);
+        Esferas.setCollideWorldBounds(true);
+        Esferas.setVelocity(Phaser.Math.Between(-100, 100), 5);
+
+
+    }
+
+
+
+}
+
+function choque(Kaze, Esferas) {
+    this.physics.pause();
+    Kaze.anims.play('Quieto');
+    gameOver = true;
 }

@@ -2,8 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\Assets",
-    "\\css"
+    "\\css",
+    "\\src"
   ],
-  "SelectedNode": "\\css\\Style1.css",
+  "SelectedNode": "\\Assets\\ui.png",
   "PreviewInSolutionExplorer": false
 }
