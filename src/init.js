@@ -33,22 +33,16 @@ function preload() {
     this.load.image([
         'Lucky',
         'Water',
-        'Fondo',
+        'Fond',
         'Plataforma',
     ]);
     this.load.spritesheet('Kaze', 'Kaze.png', { frameWidth: 32.5, frameHeight: 48 });
-    plataforma = this.physics.add.staticGroup();
+   
 };
 function create() {
-    this.add.image(400, 300, 'Fondo').setScale(1, 1.15);
+    this.add.image(400, 450, 'Fond').setScale(1, 2.5);
+    plataforma = this.physics.add.staticGroup();
     plataforma.create(400, 590, 'Plataforma').setScale(2.1, 1).refreshBody();
-    plataforma.create(400, 0, 'Plataforma').setScale(2.1, 1).refreshBody();
-    plataforma.create(700, 410, 'Plataforma').setScale(0.3, 1).refreshBody();
-    plataforma.create(400, 300, 'Plataforma').setScale(0.2, 1).refreshBody();
-    plataforma.create(800, 150, 'Plataforma');
-    plataforma.create(-50, 300, 'plataforma');
-    plataforma.create(0, 450, 'Plataforma');
-    plataforma.getChildren()[0].setOffset(0, 10);
     Kaze = this.physics.add.sprite(230, 100, 'Kaze');
     Kaze.setCollideWorldBounds(true);
     Kaze.setBounce(0.2);
@@ -130,7 +124,7 @@ function create() {
 
 
 };
-function update(time, delta) {
+function update() {
     if (gameOver) {
         return;
     }
