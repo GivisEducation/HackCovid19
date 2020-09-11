@@ -32,6 +32,8 @@ var PuntosTexto;
 var game = new Phaser.Game(config);
 
 function preload() {
+    this.load.image('particulas', 'http://labs.phaser.io/assets/particles/green-orb.png');
+    //this.load.audio('sonido', './Assets/audio.mp3');
     this.load.setPath('./Assets/');
     this.load.image([
         'Alcohol',
@@ -52,7 +54,7 @@ function create() {
     Plataforma.create(800, 150, 'Plataforma');
     Plataforma.create(-50, 300, 'Plataforma');
     Plataforma.create(0, 450, 'Plataforma');
-    Kaze = this.physics.add.sprite(220, 200, 'Kaze');
+    Kaze = this.physics.add.sprite(230, 100, 'Kaze');
     Kaze.setCollideWorldBounds(true);
     Kaze.setBounce(0.2);
 
