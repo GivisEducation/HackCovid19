@@ -26,19 +26,22 @@ const config = {
 var gameOver = false;
 var Puntos = 0;
 var PuntosTexto;
+var Despedida;
 
 
 
 var game = new Phaser.Game(config);
 
 function preload() {
-    this.load.image('particulas', 'http://labs.phaser.io/assets/particles/green-orb.png');
-    //this.load.audio('sonido', './Assets/audio.mp3');
-    this.load.setPath('./Assets/');
+    this.load.image('particulas', 'http://labs.phaser.io/assets/particles/yellow.png');
+
+    this.load.audio('sonido', 'http://labs.phaser.io/assets/audio/SoundEffects/spaceman.wav');
+    this.load.setPath('./assets/');
     this.load.image([
         'Alcohol',
         'Esfera',
         //'Fondo',
+        //'hg',
         'Plataforma',
     ]);
     this.load.spritesheet('Kaze', 'kaze.png', { frameWidth: 32.5, frameHeight: 48 });
@@ -46,6 +49,21 @@ function preload() {
 
 };
 function create() {
+    var particles = this.add.particles('particulas');
+
+    var emitter = particles.createEmitter({
+        speed: 90,
+        scale: { start: 1, end: 0 },
+        blendMode: 'ADD'
+    });
+    //var logo = this.physics.add.image(400, 100, 'hg');
+
+    //logo.setVelocity(100, 200);
+    //logo.setBounce(1, 1);
+    //logo.setCollideWorldBounds(true);
+
+    //emitter.startFollow(Kaze);
+
     //this.add.image(400, 300, 'Fondo').setScale(1, 1.15);
     Plataforma.create(400, 590, 'Plataforma').setScale(2.1, 1).refreshBody();
     Plataforma.create(400, 0, 'Plataforma').setScale(2.1, 1).refreshBody();
@@ -56,7 +74,12 @@ function create() {
     Plataforma.create(0, 450, 'Plataforma');
     Kaze = this.physics.add.sprite(230, 100, 'Kaze');
     Kaze.setCollideWorldBounds(true);
-    Kaze.setBounce(0.2);
+    Kaze.setBounce(0.1);
+    Kaze.setVelocity(10, 20);
+    Kaze.setBounce(1, 0);
+    Kaze.setCollideWorldBounds(true);
+    emitter.startFollow(Kaze);
+
 
     this.anims.create({
         key: 'Izquierda',
@@ -90,24 +113,35 @@ function create() {
     coins.children.iterate(function (child) {
         child.setBounce(Phaser.Math.FloatBetween(0.4, 0.8));
     });
-
     this.physics.add.collider(Plataforma, coins);
+
+    this.physics.add.collider(Kaze,coins,rebote,null, this);
+    function rebote() {
+        efecto.play();
+    };
+    //this.physics.world.setBounceCollision(true, true, true, false);
+    const efecto = this.sound.add('sonido');
 
     this.physics.add.overlap(Kaze, coins, esconder, null, this);
 
-    PuntosTexto = this.add.text(300, 560, 'Puntos: 0', { fontSize: '40px', fill: 'purple' });
+    PuntosTexto = this.add.text(16, 16, 'Puntos: 0', { fontSize: '40px', fill: 'orange' });
     enemigos = this.physics.add.group();
     this.physics.add.collider(enemigos, Plataforma);
     this.physics.add.collider(Kaze, enemigos, choque, null, this);
 
-
-
+    this.gameOverText = this.add.text(400, 300, 'Game Over', { fontSize: '40px', fill: 'white' });
+    this.gameOverText.setOrigin(0.5);
+    this.gameOverText.visible = false;
+    
 };
 
 function choque(Kaze, Esferas) {
     this.physics.pause();
+    Kaze.setTint(0xff0000);
     Kaze.anims.play('Quieto');
     gameOver = true;
+    this.gameOverText.visible = true;
+    
 }
 
 function update(time, delta) {
